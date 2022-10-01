@@ -1,0 +1,106 @@
+﻿@page "/student/new";
+@using RihalApp.FormModels
+@using RihalApp.Notifier
+@using RihalApp.Services.AddNewStudentUseCaseService
+@using RihalApp.Services.GetNewStudentMetaDataUseCaseService
+
+@inject IGetNewStudentMetaDataUseCaseService _GetNewStudentMetaDataUseCaseService;
+@inject IAddNewStudentUseCaseService _addNewStudentUseCaseService
+@inject AppNotifier _appNotifier
+
+
+<h3>Add New Student</h3>
+
+<EditForm Model="@student" OnValidSubmit="SubmitForm">
+   <DataAnnotationsValidator/>
+  <div class="form-group row">
+    <label for="fullname" class="col-sm-1 col-form-label" style=" font-weight: bold;">Student Name</label>
+    <div class="col-sm-5">
+      <InputText id="fullname" @bind-Value="student.Name" class="form-control"  />
+      <ValidationMessage For="@(()=> student.Name)"/>
+    </div>
+  </div>
+
+  <br/>
+
+  <div class="form-group row">
+    <label for="dateofbirth" class="col-sm-1 col-form-label" style=" font-weight: bold;">Date Of Birth</label>
+    <div class="col-sm-5">
+      <InputDate @bind-Value="student.DateOfBirth" class="form-control" id="dateofbirth" />
+            <ValidationMessage For="@(()=> student.DateOfBirth)"/>
+    </div>
+  </div>   
+  
+    <br/>
+
+  <div class="form-group row">
+    <label for="countryid" class="col-sm-1 col-form-label" style=" font-weight: bold;">Country</label>
+    <div class="col-sm-5">
+   
+        <RadzenDropDown AllowClear="true" AllowFiltering="true" 
+            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" Data=@countries @bind-Value="student.CountryId"            
+            TextProperty="Name" ValueProperty="Id" id="countryid" />
+      <ValidationMessage For="@(()=> student.CountryId)"/>
+    </div>
+  </div>  
+  
+    <br/>
+
+  <div class="form-group row">
+    <label for="classid" class="col-sm-1 col-form-label" style=" font-weight: bold;">Class</label>
+    <div class="col-sm-5">
+         <RadzenDropDown AllowClear="true" AllowFiltering="true" 
+            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" Data=@classes @bind-Value="student.ClassId"            
+            TextProperty="Name" ValueProperty="Id" id="classid" />
+                  <ValidationMessage For="@(()=> student.ClassId)"/>
+
+    </div>
+  </div>
+    <div class="form-group row">
+    <label for="classid" class="col-sm-1 col-form-label"></label>
+    <div class="col-sm-5">
+           <button type="submit" class="btn btn-primary mb-2" > Submit </button>
+    </div>
+  </div>
+  
+</EditForm>
+
+
+@code {
+    private CancellationTokenSource source = new CancellationTokenSource();
+    NewStudent student = new NewStudent();
+    private List<CountryOutputDto> countries = new List<CountryOutputDto>();
+    private List<ClassOutputDto> classes = new List<ClassOutputDto>();
+
+    async Task SubmitForm()
+    {
+        try
+        {
+            await _addNewStudentUseCaseService.AddNewStudentAsync(student, source.Token);
+            _appNotifier.NotifySuccess("Student Added Successfully");
+        }
+    catch
+        {
+            _appNotifier.NotifyError();
+
+        }
+        finally
+        {
+            ResetForm();
+        }
+    }
+    protected async override Task OnInitializedAsync()
+    {
+        var metadata = await _GetNewStudentMetaDataUseCaseService.GetNewStudentMetaDataAsync(source.Token);
+        countries = metadata.Countries;
+        classes = metadata.Classes;
+    }
+
+    void ResetForm()
+    {
+        
+            student.Name = String.Empty;
+            student.CountryId = default(int);
+            student.ClassId = default(int);
+    }
+}

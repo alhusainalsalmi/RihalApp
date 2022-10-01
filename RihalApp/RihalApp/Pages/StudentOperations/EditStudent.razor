@@ -1,0 +1,126 @@
+﻿@page "/student/edit/{StudentId:int}"
+
+@using RihalApp.FormModels
+@using RihalApp.Notifier
+@using RihalApp.Services.GetNewStudentMetaDataUseCaseService
+@using RihalApp.Services.GetStudentByIdUseCaseService
+@using RihalApp.Services.GetStudentsUseCaseService
+@using RihalApp.Services.UpdateStudentUseCaseService
+@inject IGetStudentByIdToEditUseCaseService _getStudentByIdToEditUseCaseService
+@inject IGetNewStudentMetaDataUseCaseService _getMetaDataUseCaseService
+@inject IUpdateStudentUseCaseService _updateStudentUseCaseService
+@inject AppNotifier _appNotifier
+@inject NavigationManager _navigator
+
+
+<h3>EditStudent</h3>
+
+<EditForm Model="@studentToEdit" OnValidSubmit="SubmitForm">
+    <DataAnnotationsValidator />
+
+    <div class="form-group row">
+        <label for="fullname" class="col-sm-1 col-form-label" style=" font-weight: bold;">Student Id</label>
+        <div class="col-sm-5">
+            <Input id="fullname" readonly class="form-control" value="@studentToEdit.Id" />
+        </div>
+    </div>
+
+    <br />
+
+    <div class="form-group row">
+        <label for="fullname" class="col-sm-1 col-form-label" style=" font-weight: bold;">Student Name</label>
+        <div class="col-sm-5">
+            <InputText id="fullname" @bind-Value="studentToEdit.Name" class="form-control" />
+            <ValidationMessage For="@(()=> studentToEdit.Name)" />
+        </div>
+    </div>
+
+    <br />
+
+    <div class="form-group row">
+        <label for="dateofbirth" class="col-sm-1 col-form-label" style=" font-weight: bold;">Date Of Birth</label>
+        <div class="col-sm-5">
+            <InputDate @bind-Value="studentToEdit.DateOfBirth" class="form-control" id="dateofbirth" />
+            <ValidationMessage For="@(()=> studentToEdit.DateOfBirth)" />
+        </div>
+    </div>
+
+    <br />
+
+    <div class="form-group row">
+        <label for="countryid" class="col-sm-1 col-form-label" style=" font-weight: bold;">Country</label>
+        <div class="col-sm-5">
+
+            <RadzenDropDown AllowClear="true" AllowFiltering="true"
+                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" Data=@countries @bind-Value="studentToEdit.CountryId"
+                            TextProperty="Name" ValueProperty="Id" id="countryid" />
+            <ValidationMessage For="@(()=> studentToEdit.CountryId)" />
+        </div>
+    </div>
+
+    <br />
+
+    <div class="form-group row">
+        <label for="classid" class="col-sm-1 col-form-label" style=" font-weight: bold;">Class</label>
+        <div class="col-sm-5">
+            <RadzenDropDown AllowClear="true" AllowFiltering="true"
+                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" Data=@classes @bind-Value="studentToEdit.ClassId"
+                            TextProperty="Name" ValueProperty="Id" id="classid" />
+            <ValidationMessage For="@(()=> studentToEdit.ClassId)" />
+
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="classid" class="col-sm-1 col-form-label"></label>
+        <div class="col-sm-5">
+            <button type="submit" class="btn btn-primary mb-2"> Submit </button>
+        </div>
+    </div>
+
+</EditForm>
+@code {
+
+    [Parameter]
+    public int StudentId { get; set; }
+
+    private CancellationTokenSource source = new CancellationTokenSource();
+
+    private StudentToEditDto? studentToEdit;
+    private List<CountryOutputDto> countries = new List<CountryOutputDto>();
+    private List<ClassOutputDto> classes = new List<ClassOutputDto>();
+
+    async void SubmitForm()
+    {
+        try
+        {
+            await _updateStudentUseCaseService.UpdateStudentAsync(studentToEdit, source.Token);
+
+            _appNotifier.NotifySuccess("Student Updated Successfully");
+
+            _navigator.NavigateTo("students");
+        }
+        catch
+        {
+            _appNotifier.NotifyError();
+
+        }
+
+    }
+
+    protected async override Task OnInitializedAsync()
+    {
+        try
+        {
+            studentToEdit = await _getStudentByIdToEditUseCaseService.GetStudentByIdAsync(StudentId);
+            var metadata = await _getMetaDataUseCaseService.GetNewStudentMetaDataAsync(source.Token);
+            countries = metadata.Countries;
+            classes = metadata.Classes;
+        }
+        catch
+        {
+            _appNotifier.NotifyError();
+
+        }
+
+    }
+}

@@ -1,0 +1,19 @@
+﻿@page "/theme"
+
+@using MudBlazor
+
+
+<MudThemeProvider @bind-IsDarkMode="@ThemeConfig.isDarkMode" />
+
+<MudSwitch @bind-Checked="@ThemeConfig.isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Dark Mode" @onclick="() =>SetIsDarkMode()"/>
+
+@code{
+    private MudTheme _theme = new();
+    private bool SetIsDarkMode()
+    {
+        ThemeConfig.isDarkMode = false;
+        return true;
+    }
+}
+
+

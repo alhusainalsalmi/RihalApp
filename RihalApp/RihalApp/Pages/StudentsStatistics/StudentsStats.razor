@@ -1,0 +1,95 @@
+﻿@page "/StudentStats"
+
+<PageTitle>Student Statistics</PageTitle>
+
+@using RihalApp.Data
+@using RihalApp.Services.IsStudentsTableHasRecordsUseCase
+@using RihalApp.Notifier
+@inject IIsStudentsTableHasRecordsUseCaseService _isStudentsTableHasRecordsUseCaseService
+@inject AppNotifier _appNotifier
+@inject NavigationManager _navigator;
+<h1>Student Statistics</h1>
+
+<p>This component demonstrates fetching data from a service.</p>
+       
+@if (!IsDataCanBeLoaded)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+       
+     
+<RadzenTabs >
+    <Tabs>
+        <RadzenTabsItem Text="Students Per Country">
+  <div class="row">
+    <div class="col-sm-2">
+    </div>
+    <div class="col-sm">
+           <StudentsPerCountry></StudentsPerCountry>
+    </div>
+    <div class="col-sm-2">
+    </div>
+  </div>
+
+        </RadzenTabsItem>
+        <RadzenTabsItem Text="Students Per Class">
+  <div class="row">
+    <div class="col-sm-2">
+    </div>
+    <div class="col-sm">
+      <StudentsPerClass></StudentsPerClass>
+    </div>
+    <div class="col-sm-2">
+    </div>
+  </div>
+        </RadzenTabsItem>
+        <RadzenTabsItem Text="Students Average Age">
+    <div class="row">
+    <div class="col-sm-4">
+    </div>
+    <div class="col-sm">
+      <StudentsAverageAge></StudentsAverageAge>
+    </div>
+    <div class="col-sm-4">
+    </div>
+  </div>        </RadzenTabsItem>
+    </Tabs>
+</RadzenTabs>
+
+}
+@code {
+
+    private bool IsDataCanBeLoaded = false ;
+    private CancellationTokenSource source = new CancellationTokenSource();
+
+    protected override async Task OnInitializedAsync()
+    {
+
+
+        try
+        {
+            var isStudentsTableHasRecords = await _isStudentsTableHasRecordsUseCaseService.IsStudentsTableHasRecordsUseCaseAsync(source.Token);
+
+            if (!isStudentsTableHasRecords)
+            {
+                _appNotifier.NotifyWarning("Students Table is Empty. Data Must be Entried First");
+                await Task.Delay(3000);
+                _navigator.NavigateTo("/student/new");
+                return;
+            }
+
+            IsDataCanBeLoaded = true;
+        }
+        catch 
+        {
+            _appNotifier.NotifyError();
+
+        }
+
+
+    }
+
+
+}

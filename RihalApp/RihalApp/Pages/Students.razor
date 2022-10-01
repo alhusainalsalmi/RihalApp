@@ -1,0 +1,105 @@
+﻿@page "/students"
+@using RihalApp.Domain.Repositories
+@using RihalApp.Notifier
+@using RihalApp.Services.GetStudentsUseCaseService
+@inject IGetStudentsUseCaseService _getStudentsUseCaseService
+@inject AppNotifier _appNotifier
+@inject NavigationManager _navigator
+@inject IDeleteStudentUseCaseRepository _deleteStudentUseCaseRepository
+
+<h3>Students</h3>
+
+@if (students == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+
+}
+
+<RadzenDataGrid AllowFiltering="true" AllowPaging="true" PageSize="6" AllowSorting="true" Data="@students" TItem="StudentOutputDto">
+
+    <Columns>
+        <RadzenDataGridColumn Width="150px" TItem="StudentOutputDto" Filterable="false" Property="Id" Title="Id" TextAlign="TextAlign.Center">
+            <Template Context="student">
+                @student.Id
+            </Template>
+        </RadzenDataGridColumn>
+
+        <RadzenDataGridColumn TItem="StudentOutputDto" Filterable="false" Property="Name" Title="Name" TextAlign="TextAlign.Center">
+            <Template Context="student">
+                @student.Name
+            </Template>
+        </RadzenDataGridColumn>
+
+        <RadzenDataGridColumn TItem="StudentOutputDto" Filterable="false" Sortable="false" Property="DateOfBirth" Title="Date of Birth" TextAlign="TextAlign.Center">
+            <Template Context="student">
+                @student.DateOfBirth.ToShortDateString()
+            </Template>
+        </RadzenDataGridColumn>
+
+        <RadzenDataGridColumn TItem="StudentOutputDto" Filterable="false" Sortable="false" Property="Country" Title="Country" TextAlign="TextAlign.Center">
+            <Template Context="student">
+                @student.Country
+            </Template>
+        </RadzenDataGridColumn>
+
+        <RadzenDataGridColumn TItem="StudentOutputDto" Filterable="false" Sortable="false" Property="Class" Title="Class" TextAlign="TextAlign.Center">
+            <Template Context="student">
+                @student.Class
+            </Template>
+        </RadzenDataGridColumn>
+
+        <RadzenDataGridColumn TItem="StudentOutputDto" Filterable="false" Sortable="false" Property="" Title="Delete/Edit" TextAlign="TextAlign.Center">
+            <Template Context="student">
+                <RadzenButton Click=@(args => EditStudent(@student.Id)) Text="Edit" ButtonStyle="ButtonStyle.Info" />
+                <RadzenButton Click=@(args => DeleteStudent(@student.Id)) Text="Delete" ButtonStyle="ButtonStyle.Danger" />
+            </Template>
+
+        </RadzenDataGridColumn>
+    </Columns>
+
+</RadzenDataGrid>
+
+@code {
+    private CancellationTokenSource source = new CancellationTokenSource();
+
+    private List<StudentOutputDto>? students;
+
+    protected async override Task OnInitializedAsync()
+    {
+        try
+        {
+            students = await _getStudentsUseCaseService.GetStudentsAsync(source.Token);
+            if (students == null)
+            {
+                _appNotifier.NotifyWarning("Students Table is empty, please insert data first");
+            }
+        }
+        catch (Exception ex)
+        {
+            _appNotifier.NotifyError();
+        }
+    }
+    void EditStudent(int id)
+    {
+        _navigator.NavigateTo($"student/edit/{id}");
+    }
+
+    async Task DeleteStudent(int id)
+    {
+        try
+        {
+            await _deleteStudentUseCaseRepository.DeleteStudentByIdAsync(id, source.Token);
+
+            _appNotifier.NotifySuccess("Student Deleted Successfully");
+
+            students = await _getStudentsUseCaseService.GetStudentsAsync(source.Token);
+        }
+        catch (Exception ex)
+        {
+            _appNotifier.NotifyError();
+        }
+    }
+}

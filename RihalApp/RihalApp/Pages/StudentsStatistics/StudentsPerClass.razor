@@ -1,0 +1,43 @@
+﻿@page "/StudentStats/perclass"
+@using RihalApp.Services.GetStudentsPerClassUseCaseService
+@using RihalApp.Notifier
+@inject IGetStudentsPerClassUseCaseService _getStudentsPerClassUseCaseService 
+@inject AppNotifier _appNotifier
+
+<RadzenChart>
+  <RadzenColumnSeries Data="@Data" CategoryProperty="ClassName" ValueProperty="NumberOfStudents"  Title="Students Per Class" >
+          <TooltipTemplate Context="data">
+      <div>
+        Students Number of <span>@data.ClassName</span> :
+        <strong>@data.NumberOfStudents</strong>
+      </div>
+    </TooltipTemplate>
+      </RadzenColumnSeries>
+  <RadzenValueAxis Min="0">
+      <RadzenAxisTitle Text="Number of Students" />
+  </RadzenValueAxis>
+  <RadzenCategoryAxis>
+      <RadzenAxisTitle Text="Class" />
+  </RadzenCategoryAxis>
+  
+</RadzenChart>
+@code {
+    private CancellationTokenSource source = new CancellationTokenSource();
+    private List<StudentsPerClassOutputDto>? Data;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Data =  await _getStudentsPerClassUseCaseService.GetStudentsPerClassAsync(source.Token);
+
+        }
+        catch
+        {
+            _appNotifier.NotifyError();
+        }
+
+    }
+
+    
+}
