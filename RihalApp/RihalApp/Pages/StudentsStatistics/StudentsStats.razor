@@ -8,60 +8,63 @@
 @inject IIsStudentsTableHasRecordsUseCaseService _isStudentsTableHasRecordsUseCaseService
 @inject AppNotifier _appNotifier
 @inject NavigationManager _navigator;
+@implements IDisposable
+
 <h1>Student Statistics</h1>
 
 <p>This component demonstrates fetching data from a service.</p>
-       
+
 @if (!IsDataCanBeLoaded)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
-       
-     
-<RadzenTabs >
-    <Tabs>
-        <RadzenTabsItem Text="Students Per Country">
-  <div class="row">
-    <div class="col-sm-2">
-    </div>
-    <div class="col-sm">
-           <StudentsPerCountry></StudentsPerCountry>
-    </div>
-    <div class="col-sm-2">
-    </div>
-  </div>
 
-        </RadzenTabsItem>
-        <RadzenTabsItem Text="Students Per Class">
-  <div class="row">
-    <div class="col-sm-2">
-    </div>
-    <div class="col-sm">
-      <StudentsPerClass></StudentsPerClass>
-    </div>
-    <div class="col-sm-2">
-    </div>
-  </div>
-        </RadzenTabsItem>
-        <RadzenTabsItem Text="Students Average Age">
-    <div class="row">
-    <div class="col-sm-4">
-    </div>
-    <div class="col-sm">
-      <StudentsAverageAge></StudentsAverageAge>
-    </div>
-    <div class="col-sm-4">
-    </div>
-  </div>        </RadzenTabsItem>
-    </Tabs>
-</RadzenTabs>
+
+    <RadzenTabs>
+        <Tabs>
+            <RadzenTabsItem Text="Students Per Country">
+                <div class="row">
+                    <div class="col-sm-2">
+                    </div>
+                    <div class="col-sm">
+                        <StudentsPerCountry></StudentsPerCountry>
+                    </div>
+                    <div class="col-sm-2">
+                    </div>
+                </div>
+
+            </RadzenTabsItem>
+            <RadzenTabsItem Text="Students Per Class">
+                <div class="row">
+                    <div class="col-sm-2">
+                    </div>
+                    <div class="col-sm">
+                        <StudentsPerClass></StudentsPerClass>
+                    </div>
+                    <div class="col-sm-2">
+                    </div>
+                </div>
+            </RadzenTabsItem>
+            <RadzenTabsItem Text="Students Average Age">
+                <div class="row">
+                    <div class="col-sm-4">
+                    </div>
+                    <div class="col-sm">
+                        <StudentsAverageAge></StudentsAverageAge>
+                    </div>
+                    <div class="col-sm-4">
+                    </div>
+                </div>
+            </RadzenTabsItem>
+        </Tabs>
+    </RadzenTabs>
 
 }
 @code {
 
-    private bool IsDataCanBeLoaded = false ;
+    private bool IsDataCanBeLoaded = false;
     private CancellationTokenSource source = new CancellationTokenSource();
 
     protected override async Task OnInitializedAsync()
@@ -82,13 +85,19 @@ else
 
             IsDataCanBeLoaded = true;
         }
-        catch 
+        catch
         {
             _appNotifier.NotifyError();
 
         }
 
 
+    }
+
+    public void Dispose()
+    {
+        source.Cancel();
+        source.Dispose();
     }
 
 

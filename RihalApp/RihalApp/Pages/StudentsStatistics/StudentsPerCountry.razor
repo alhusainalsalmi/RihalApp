@@ -1,14 +1,16 @@
 ﻿@page "/StudentStats/percountry"
 @using RihalApp.Services.GetStudentsPerCountryUseCaseService
 @using RihalApp.Notifier
-@inject IGetStudentsPerCountryUseCaseService _getStudentsPerCountryUseCaseService 
+@inject IGetStudentsPerCountryUseCaseService _getStudentsPerCountryUseCaseService
 @inject AppNotifier _appNotifier
+@implements IDisposable
 
-  <RadzenChart >
-                    <RadzenPieSeries Data="@Data" Title="Students Per Country" CategoryProperty="CountryName" ValueProperty="NumberOfStudents">
-                        <RadzenSeriesDataLabels Visible="true" />
-                    </RadzenPieSeries>
-   </RadzenChart>
+
+<RadzenChart>
+    <RadzenPieSeries Data="@Data" Title="Students Per Country" CategoryProperty="CountryName" ValueProperty="NumberOfStudents">
+        <RadzenSeriesDataLabels Visible="true" />
+    </RadzenPieSeries>
+</RadzenChart>
 
 
 
@@ -16,14 +18,14 @@
 
 
 
-     private CancellationTokenSource source = new CancellationTokenSource();
+    private CancellationTokenSource source = new CancellationTokenSource();
     private List<StudentsPerCountryOutputDto>? Data;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            Data =  await _getStudentsPerCountryUseCaseService.GetStudentsPerCountryAsync(source.Token);
+            Data = await _getStudentsPerCountryUseCaseService.GetStudentsPerCountryAsync(source.Token);
 
         }
         catch
@@ -34,16 +36,9 @@
     }
 
 
-     class DataItem
+    public void Dispose()
     {
-        public string Quarter { get; set; }
-        public double Revenue { get; set; }
+        source.Cancel();
+        source.Dispose();
     }
-
-    DataItem[] revenue = new DataItem[]
-    {
-      new DataItem { Quarter = "Q1", Revenue = 25 },
-      new DataItem { Quarter = "Q2", Revenue = 28 },
-      new DataItem { Quarter = "Q3", Revenue = 22 }
-    };
 }

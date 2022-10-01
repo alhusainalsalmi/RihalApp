@@ -1,25 +1,27 @@
 ﻿@page "/StudentStats/perclass"
 @using RihalApp.Services.GetStudentsPerClassUseCaseService
 @using RihalApp.Notifier
-@inject IGetStudentsPerClassUseCaseService _getStudentsPerClassUseCaseService 
+@inject IGetStudentsPerClassUseCaseService _getStudentsPerClassUseCaseService
 @inject AppNotifier _appNotifier
+@implements IDisposable
+
 
 <RadzenChart>
-  <RadzenColumnSeries Data="@Data" CategoryProperty="ClassName" ValueProperty="NumberOfStudents"  Title="Students Per Class" >
-          <TooltipTemplate Context="data">
-      <div>
-        Students Number of <span>@data.ClassName</span> :
-        <strong>@data.NumberOfStudents</strong>
-      </div>
-    </TooltipTemplate>
-      </RadzenColumnSeries>
-  <RadzenValueAxis Min="0">
-      <RadzenAxisTitle Text="Number of Students" />
-  </RadzenValueAxis>
-  <RadzenCategoryAxis>
-      <RadzenAxisTitle Text="Class" />
-  </RadzenCategoryAxis>
-  
+    <RadzenColumnSeries Data="@Data" CategoryProperty="ClassName" ValueProperty="NumberOfStudents" Title="Students Per Class">
+        <TooltipTemplate Context="data">
+            <div>
+                Students Number of <span>@data.ClassName</span> :
+                <strong>@data.NumberOfStudents</strong>
+            </div>
+        </TooltipTemplate>
+    </RadzenColumnSeries>
+    <RadzenValueAxis Min="0">
+        <RadzenAxisTitle Text="Number of Students" />
+    </RadzenValueAxis>
+    <RadzenCategoryAxis>
+        <RadzenAxisTitle Text="Class" />
+    </RadzenCategoryAxis>
+
 </RadzenChart>
 @code {
     private CancellationTokenSource source = new CancellationTokenSource();
@@ -29,7 +31,7 @@
     {
         try
         {
-            Data =  await _getStudentsPerClassUseCaseService.GetStudentsPerClassAsync(source.Token);
+            Data = await _getStudentsPerClassUseCaseService.GetStudentsPerClassAsync(source.Token);
 
         }
         catch
@@ -39,5 +41,11 @@
 
     }
 
-    
+    public void Dispose()
+    {
+        source.Cancel();
+        source.Dispose();
+    }
+
+
 }

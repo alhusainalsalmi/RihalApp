@@ -1,25 +1,27 @@
 ﻿@page "/StudentStats/avrg"
 @using RihalApp.Services.GetStudentsAverageAgeUseCaseService
 @using RihalApp.Notifier
-@inject IGetStudentsAverageAgeUseCaseService _getStudentsPerClassUseCaseService 
+@inject IGetStudentsAverageAgeUseCaseService _getStudentsPerClassUseCaseService
 @inject AppNotifier _appNotifier
+@implements IDisposable
+
 
 
 <RadzenChart>
-  <RadzenColumnSeries Data="@Data" CategoryProperty="AverageText" ValueProperty="AverageAge"  Title="Students Average Age" Fill="purple" >
-          <TooltipTemplate Context="data">
-      <div>
-        Average Age  <span>Students</span> :
-        <strong>@data.AverageAge</strong>
-      </div>
-    </TooltipTemplate>
-      </RadzenColumnSeries>
-  <RadzenValueAxis>
-      <RadzenAxisTitle Text="Average Age" />
-  </RadzenValueAxis>
-  <RadzenCategoryAxis>
-      <RadzenAxisTitle Text="" />
-  </RadzenCategoryAxis>
+    <RadzenColumnSeries Data="@Data" CategoryProperty="AverageText" ValueProperty="AverageAge" Title="Students Average Age" Fill="purple">
+        <TooltipTemplate Context="data">
+            <div>
+                Average Age  <span>Students</span> :
+                <strong>@data.AverageAge</strong>
+            </div>
+        </TooltipTemplate>
+    </RadzenColumnSeries>
+    <RadzenValueAxis>
+        <RadzenAxisTitle Text="Average Age" />
+    </RadzenValueAxis>
+    <RadzenCategoryAxis>
+        <RadzenAxisTitle Text="" />
+    </RadzenCategoryAxis>
 
 </RadzenChart>
 @code {
@@ -28,16 +30,16 @@
 
 
     private CancellationTokenSource source = new CancellationTokenSource();
-    private  int studentsAverageAge;
-    private List<DataItem>? Data = new List<DataItem>(); 
+    private int studentsAverageAge;
+    private List<DataItem>? Data = new List<DataItem>();
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            studentsAverageAge =  await _getStudentsPerClassUseCaseService.GetStudentsAverageAgeUseCaseAsync(source.Token);
+            studentsAverageAge = await _getStudentsPerClassUseCaseService.GetStudentsAverageAgeUseCaseAsync(source.Token);
             Data.Add(new DataItem { AverageText = $"Average: {studentsAverageAge}", AverageAge = studentsAverageAge });
-          
+
         }
         catch
         {
@@ -46,11 +48,15 @@
 
     }
 
-     class DataItem
+    class DataItem
     {
         public string AverageText { get; set; }
         public double AverageAge { get; set; }
     }
 
-  
+    public void Dispose()
+    {
+        source.Cancel();
+        source.Dispose();
+    }
 }

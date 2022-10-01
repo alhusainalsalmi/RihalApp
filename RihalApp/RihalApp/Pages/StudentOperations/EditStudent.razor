@@ -11,6 +11,8 @@
 @inject IUpdateStudentUseCaseService _updateStudentUseCaseService
 @inject AppNotifier _appNotifier
 @inject NavigationManager _navigator
+@implements IDisposable
+
 
 
 <h3>EditStudent</h3>
@@ -122,5 +124,11 @@
 
         }
 
+    }
+
+    public void Dispose()
+    {
+        source.Cancel();
+        source.Dispose();
     }
 }

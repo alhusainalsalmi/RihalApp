@@ -6,6 +6,7 @@
 @inject AppNotifier _appNotifier
 @inject NavigationManager _navigator
 @inject IDeleteStudentUseCaseRepository _deleteStudentUseCaseRepository
+@implements IDisposable
 
 <h3>Students</h3>
 
@@ -101,5 +102,11 @@ else
         {
             _appNotifier.NotifyError();
         }
+    }
+
+    public void Dispose()
+    {
+        source.Cancel();
+        source.Dispose();
     }
 }
