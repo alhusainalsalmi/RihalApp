@@ -12,13 +12,11 @@
 
 @if (students == null)
 {
-    <p><em>Loading...</em></p>
+    <RadzenProgressBar  Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
+
 }
 else
 {
-
-}
-
 <RadzenDataGrid AllowFiltering="true" AllowPaging="true" PageSize="6" AllowSorting="true" Data="@students" TItem="StudentOutputDto">
 
     <Columns>
@@ -62,6 +60,9 @@ else
     </Columns>
 
 </RadzenDataGrid>
+}
+
+
 
 @code {
     private CancellationTokenSource source = new CancellationTokenSource();
