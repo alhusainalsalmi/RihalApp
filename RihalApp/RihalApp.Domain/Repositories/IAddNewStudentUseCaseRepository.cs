@@ -11,7 +11,5 @@ namespace RihalApp.Domain.Repositories
     {
         Task<int> GetNextId();
         Task AddStudentAsync(Student student, CancellationToken cancellationToken);
-        Task<Country> GetCountryByIdAsync(int id);
-        Task<Class> GetClassByIdAsync(int id);
     }
 }

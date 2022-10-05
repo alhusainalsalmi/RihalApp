@@ -16,15 +16,15 @@ namespace RihalApp.Services.GetNewStudentMetaDataUseCaseService
 
         public async Task<NewStudentMetaData> GetNewStudentMetaDataAsync(CancellationToken cancellationToken)
         {
-            var outout = new NewStudentMetaData();
+            var output = new NewStudentMetaData();
 
             var Countries = await _getCountriesUseCaseRepository.GetCountriesAsync(cancellationToken);
-            outout.Countries = Countries.Select(country => CountryOutputDto.Map(country)).ToList();
+            output.Countries = Countries.Select(country => CountryOutputDto.Map(country)).ToList();
 
             var classes = await _getClassesUseCaseRepository.GetClassesAsync(cancellationToken);
-            outout.Classes = classes.Select(c => ClassOutputDto.Map(c)).ToList();
+            output.Classes = classes.Select(c => ClassOutputDto.Map(c)).ToList();
           
-            return outout;
+            return output;
         }
     }
 }

@@ -23,10 +23,10 @@ namespace RihalApp.DataAccess.Repositories
         public async Task<List<StudentsPerCountryValueObject>> GetStudentsPerCountryAsync(CancellationToken cancellationToken)
         {
             var output = await _rihalAppDbContext.Students
+                .AsNoTracking()
                 .Include(st => st.Country)
                 .GroupBy(st => st.CountryId)
                 .Select(st => new StudentsPerCountryValueObject { CountryName = st.Select(c => c.Country.Name).First(), NumberOfStudents = st.Count() })
-                .AsNoTracking()
                 .ToListAsync(cancellationToken);
 
             if (output == null)

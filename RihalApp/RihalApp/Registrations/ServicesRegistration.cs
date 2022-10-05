@@ -1,5 +1,4 @@
 ﻿using Radzen;
-using RihalApp.Services.IsStudentsTableHasRecordsUseCase;
 using RihalApp.Notifier;
 using RihalApp.Services.GetStudentsPerClassUseCaseService;
 using RihalApp.Services.GetStudentsPerCountryUseCaseService;
@@ -20,7 +19,6 @@ namespace RihalApp.Registrations
             services.AddSingleton<NotificationService>();
             services.AddSingleton<AppNotifier>();
             services.AddMudServices();
-            services.AddScoped<IIsStudentsTableHasRecordsUseCaseService, IsStudentsTableHasRecordsUseCaseService>();
             services.AddScoped<IGetStudentsPerClassUseCaseService, GetStudentsPerClassUseCaseService>();
             services.AddScoped<IGetStudentsPerCountryUseCaseService, GetStudentsPerCountryUseCaseService>();
             services.AddScoped<IGetStudentsAverageAgeUseCaseService, GetStudentsAverageAgeUseCaseService>();

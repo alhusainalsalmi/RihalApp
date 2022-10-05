@@ -17,18 +17,15 @@ namespace RihalApp.Services.AddNewStudentUseCaseService
         {
             
             var newId = await _addNewStudentUseCaseRepository.GetNextId();
-            var country = await _addNewStudentUseCaseRepository.GetCountryByIdAsync(newStudent.CountryId);
-            var Class = await _addNewStudentUseCaseRepository.GetClassByIdAsync(newStudent.ClassId);
+          
 
             var student = new Student()
             {
                 Id = newId,
                 Name = newStudent.Name,
-                DateOfBirth = newStudent.DateOfBirth,
-                Country = country,
-                CountryId = country.Id,
-                Class = Class,
-                ClassId = Class.Id
+                DateOfBirth = newStudent.DateOfBirth,              
+                CountryId = newStudent.CountryId,
+                ClassId = newStudent.ClassId
             };
 
              await _addNewStudentUseCaseRepository.AddStudentAsync(student, cancellationToken);

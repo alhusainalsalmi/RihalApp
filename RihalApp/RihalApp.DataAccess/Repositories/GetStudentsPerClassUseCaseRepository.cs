@@ -23,10 +23,10 @@ namespace RihalApp.DataAccess.Repositories
         public async Task<List<StudentsPerClassValueObject>> GetStudentsPerClassAsync(CancellationToken cancellationToken)
         {
             var output = await _rihalAppDbContext.Students
+           .AsNoTracking()
           .Include(st => st.Class)
           .GroupBy(st => st.ClassId)
           .Select(st => new StudentsPerClassValueObject { ClassName = st.Select(c => c.Class.Name).First(), NumberOfStudents = st.Count() })
-          .AsNoTracking()
           .ToListAsync(cancellationToken);
 
             if (output == null)

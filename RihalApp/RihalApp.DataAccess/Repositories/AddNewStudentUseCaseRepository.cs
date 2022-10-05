@@ -34,24 +34,7 @@ namespace RihalApp.DataAccess.Repositories
             }
                 
         }
-        public async Task<Country> GetCountryByIdAsync(int id)
-        {
-            var output = await _rihalAppDbContext.Countries.FindAsync(id);
-
-            if (output == null)
-                throw new Exception($"Country of id:{id} cannot be fine {typeof(AddNewStudentUseCaseRepository)}");
-
-            return output;
-        }
-        public async Task<Class> GetClassByIdAsync(int id)
-        {
-            var output = await _rihalAppDbContext.Classes.FindAsync(id);
-
-            if (output == null)
-                throw new Exception($"Class of id:{id} cannot be fine {typeof(AddNewStudentUseCaseRepository)}");
-
-            return output;
-        }
+        
 
      
 

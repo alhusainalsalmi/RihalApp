@@ -21,9 +21,9 @@ namespace RihalApp.DataAccess.Repositories
         public async Task<List<Student>> GetStudentsAsync(CancellationToken cancellationToken)
         {
             return await _rihalAppDbContext.Students
-                .Include(c => c.Class)
-                .Include(c => c.Country)
                 .AsNoTracking()
+                .Include(c => c.Class)
+                .Include(c => c.Country)               
                 .ToListAsync(cancellationToken);
         }
     }

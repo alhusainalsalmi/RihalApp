@@ -22,7 +22,6 @@ namespace RihalApp.Services.UpdateStudentUseCaseService
                 ClassId = studentToUpdate.ClassId,
                 CountryId = studentToUpdate.CountryId,
                 DateOfBirth = studentToUpdate.DateOfBirth,
-
             };
 
             await _updateStudentUseCaseRepository.UpdateStudentAsync(student, cancellationToken);

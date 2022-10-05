@@ -3,9 +3,10 @@
 <PageTitle>Student Statistics</PageTitle>
 
 @using RihalApp.Data
-@using RihalApp.Services.IsStudentsTableHasRecordsUseCase
 @using RihalApp.Notifier
-@inject IIsStudentsTableHasRecordsUseCaseService _isStudentsTableHasRecordsUseCaseService
+@using RihalApp.Domain.Repositories;
+
+@inject IIsStudentsTableHasRecordsUseCaseRepository _isStudentsTableHasRecordsUseCaseRepository
 @inject AppNotifier _appNotifier
 @inject NavigationManager _navigator;
 @implements IDisposable
@@ -74,7 +75,7 @@ else
 
         try
         {
-            var isStudentsTableHasRecords = await _isStudentsTableHasRecordsUseCaseService.IsStudentsTableHasRecordsUseCaseAsync(source.Token);
+            var isStudentsTableHasRecords = await _isStudentsTableHasRecordsUseCaseRepository.IsStudentsTableHasRecordsAsync(source.Token);
 
             if (!isStudentsTableHasRecords)
             {
